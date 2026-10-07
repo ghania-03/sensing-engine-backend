@@ -8,7 +8,12 @@ app = FastAPI(title="Sensing Engine API")
 # Allow local frontend during development
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173", "http://localhost:8080"],
+    allow_origins=[
+        "http://localhost:3000", 
+        "http://localhost:5173", 
+        "http://localhost:8080",
+        "https://sensing-engine-frontend-psi.vercel.app",
+        ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
