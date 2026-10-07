@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.routes import forecast, trends, health
 
 
-app = FastAPI(title="Techfy Demand API")
+app = FastAPI(title="Sensing Engine API")
 
 # Allow local frontend during development
 app.add_middleware(
@@ -23,4 +23,4 @@ app.include_router(trends.router, prefix="/api")
 
 @app.get("/")
 def root():
-    return {"status": "techfy demand backend running"}
+    return {"status": "Sensing Engine backend running"}
