@@ -1,50 +1,89 @@
-# Sensing Engine - Backend
+# Sensing Engine Backend
 
-## Description
-This is the backend of the **Sensing Engine** project built with **FastAPI**.  
-It handles all API endpoints for demand forecasting, trends, and health checks.  
+FastAPI service for the Sensing Engine dashboard. It reads local sales-history and social-signal datasets to provide forecast, trend, SKU-mapping, signal, and health endpoints.
 
-## Folder Structure
-backend/
-│
-├── app/ # Main application code
-│ ├── routes/ # API route definitions
-│ ├── controllers/ # Business logic
-│ ├── models/ # Data models
-│ ├── services/ # Services and utilities
-│ └── utils/ # Helper functions
-├── scripts/ # Optional scripts
-├── main.py # FastAPI entry point
-├── requirements.txt # Python dependencies
+## Technology
 
+- Python
+- FastAPI
+- Uvicorn
+- pandas, NumPy, and PyArrow
 
-## Installation
+## Project structure
 
-1. **Create a virtual environment:**
-```bash
+```text
+sensing-engine-backend/
+├── app/
+│   ├── main.py
+│   └── routes/
+│       ├── forecast.py
+│       ├── health.py
+│       └── trends.py
+├── data/
+│   ├── cleaned/
+│   ├── google_signals.csv
+│   ├── historic.csv
+│   └── social.csv
+├── scripts/
+│   ├── clean_data.py
+│   ├── seed_dummy_data.py
+│   ├── smoke_test.py
+│   └── smoke_test_forecast.py
+├── requirements.txt
+└── README.md
+```
+
+The API prefers cleaned Parquet files in `data/cleaned/` for historic and social data, falling back to the corresponding CSV files. The scripts include data cleaning, sample data generation, and API smoke checks.
+
+## Local setup
+
+Run these commands from the backend repository root:
+
+```sh
 python -m venv .venv
-Activate the virtual environment:
+```
 
-# Windows
-.venv\Scripts\activate
+Activate the environment:
 
-# Linux / Mac
+```powershell
+# Windows PowerShell
+.\.venv\Scripts\Activate.ps1
+```
+
+```sh
+# macOS or Linux
 source .venv/bin/activate
-Install dependencies:
+```
 
-pip install -r requirements.txt
-Run Backend
-uvicorn main:app --reload
-Server will start on http://127.0.0.1:8000
+Install dependencies and start the API:
 
-API endpoints are prefixed with /api
+```sh
+python -m pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
 
-Example: GET http://127.0.0.1:8000/api/health
+Uvicorn serves locally at `http://127.0.0.1:8000` by default. The app does not read environment variables for its current configuration. CORS is configured in `app/main.py` for local frontend origins on ports 3000, 5173, and 8080.
 
-Notes
-The backend currently does not require a .env file.
+## API
 
-.venv and __pycache__ are ignored in version control.
+All API routes are prefixed with `/api`.
 
-For deployment, create a new virtual environment locally and install dependencies.
+| Method | Endpoint | Query parameters |
+| --- | --- | --- |
+| GET | `/` | — |
+| GET | `/api/health` | — |
+| GET | `/api/forecast` | Required: `sku`. Optional: `horizon` (7, 14, or 30; default 14), `region` (default `global`), `start_date` (YYYY-MM-DD). |
+| GET | `/api/trends` | — |
+| GET | `/api/sku-mapping` | — |
+| GET | `/api/signals` | — |
+| GET | `/api/signals/google` | — |
+| GET | `/api/social` | Optional: `hashtag`, `top_n` (default 10). |
+| GET | `/api/sources` | — |
 
+The forecast endpoint currently calculates forecasts from a rolling historical mean with weekday multipliers; confidence intervals and stockout risk are heuristic values. It is not a trained forecasting model. The trend and signal endpoints summarize the local datasets.
+
+## Current limitations
+
+- `/api/historic` is not registered, although `scripts/smoke_test.py` includes a request to that path.
+- The forecast cache is held in process memory and uses a 24-hour TTL.
+- `scripts/smoke_test_forecast.py` imports `requests`, which is not listed in `requirements.txt`.
