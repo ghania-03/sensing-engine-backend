@@ -3,9 +3,10 @@
 FastAPI service for the Sensing Engine dashboard. It reads local sales-history and social-signal datasets to provide forecast, trend, SKU-mapping, signal, and health endpoints.
 
 ## Deployment
+ 
+**API:** [View](https://sensing-engine-backend-amber.vercel.app/ ) 
 
-**API:** https://sensing-engine-backend-amber.vercel.app/  
-**API Documentation:** https://sensing-engine-backend-amber.vercel.app/docs
+**API Documentation:** [View](https://sensing-engine-backend-amber.vercel.app/docs ) 
 
 ## Technology
 
